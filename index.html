@@ -22,8 +22,9 @@
 </head>
 <body>
     <h1>Fluidez+</h1>
-    <p>Presiona el botón y habla. Analizaremos tu velocidad.</p>
+    <p>Presiona "Grabar Voz" para empezar y "Detener" cuando termines de hablar. Analizaremos tu velocidad.</p>
     <button id="recordButton">🎤 Grabar Voz</button>
+    <button id="stopButton" disabled>🛑 Detener</button>
     <p class="status" id="statusText">Esperando...</p>
     
     <script>
@@ -41,6 +42,13 @@
                 document.getElementById("statusText").className = "status";
                 startTime = new Date().getTime();
                 recognition.start();
+                document.getElementById("recordButton").disabled = true;
+                document.getElementById("stopButton").disabled = false;
+            });
+
+            document.getElementById("stopButton").addEventListener("click", function() {
+                recognition.stop();
+                document.getElementById("stopButton").disabled = true;
             });
 
             recognition.onresult = function(event) {
@@ -72,3 +80,4 @@
     </script>
 </body>
 </html>
+
