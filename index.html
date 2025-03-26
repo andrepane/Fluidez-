@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluidez+</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .status {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .green { color: green; }
+        .yellow { color: orange; }
+        .red { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Fluidez+</h1>
+    <p>Presiona el botón y habla. Analizaremos tu velocidad.</p>
+    <button id="recordButton">🎤 Grabar Voz</button>
+    <p class="status" id="statusText">Esperando...</p>
+    
+    <script>
+        let recognition;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = "es-ES";
+            
+            let startTime, endTime;
+
+            document.getElementById("recordButton").addEventListener("click", function() {
+                document.getElementById("statusText").textContent = "Escuchando...";
+                document.getElementById("statusText").className = "status";
+                startTime = new Date().getTime();
+                recognition.start();
+            });
+
+            recognition.onresult = function(event) {
+                endTime = new Date().getTime();
+                let speechTime = (endTime - startTime) / 1000; // Tiempo en segundos
+                let words = event.results[0][0].transcript.split(" ").length;
+                let speed = words / speechTime; // Palabras por segundo
+
+                let statusText = document.getElementById("statusText");
+                if (speed < 2) {
+                    statusText.textContent = "Fluidez óptima (" + speed.toFixed(2) + " palabras/seg)";
+                    statusText.className = "status green";
+                } else if (speed >= 2 && speed <= 3.5) {
+                    statusText.textContent = "Hablas un poco rápido (" + speed.toFixed(2) + " palabras/seg)";
+                    statusText.className = "status yellow";
+                } else {
+                    statusText.textContent = "Estás hablando demasiado rápido (" + speed.toFixed(2) + " palabras/seg)";
+                    statusText.className = "status red";
+                }
+            };
+
+            recognition.onerror = function() {
+                document.getElementById("statusText").textContent = "Error al grabar voz.";
+                document.getElementById("statusText").className = "status red";
+            };
+        } else {
+            alert("Tu navegador no soporta reconocimiento de voz. Usa Google Chrome.");
+        }
+    </script>
+</body>
+</html>
